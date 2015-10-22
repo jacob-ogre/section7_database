@@ -1,0 +1,5 @@
+Defenders of Wildlife repo for the first section 7 data analysis and app.
+
+This repository includes the code used to prepare the section 7 datasets as well
+as the various old versions of the Shiny web app. Many sub-directories include 
+their own READMEs.
