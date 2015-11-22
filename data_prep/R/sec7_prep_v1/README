@@ -1,0 +1,5 @@
+Old scripts for examining the section 7 data.
+
+The R scripts in this directory were used when we first began exploring the 
+section 7 data from FWS. Code that was used to process the data for the Shiny 
+app and for analyses in the PNAS paper are in sec7_prep_v2.

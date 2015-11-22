@@ -1,4 +1,4 @@
-# Final re-import and saving of data file (post-salmonid fix).
+# Semi-final re-import and saving of data file (post-salmonid fix).
 # Copyright © 2015 Defenders of Wildlife, jmalcom@defenders.org
 
 # This program is free software; you can redistribute it and/or modify
