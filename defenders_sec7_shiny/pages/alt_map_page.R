@@ -218,7 +218,11 @@ alt_map_page <- {
                     helpText("Data shown is based on selection criteria. A
                              small number of ES Offices are not shown 
                              because of office name changes. Office boundaries
-                             are close approximations of FWS coverage areas."
+                             are close approximations of FWS coverage areas.\n
+							 Hovering over the map for ~1 sec. or clicking the 
+                             the map will enable zooming with mouse scroll. 
+                             Moving the mouse outside of the map will disable 
+                             zoom-by-scroll."
                     )
                 )
             )

@@ -26,7 +26,8 @@ sidebar <- dashboardSidebar(disable=TRUE)
 # Define the page(s) with dashboardBody
 body <- dashboardBody(
     tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "custom_styles.css")
+        tags$link(rel = "stylesheet", type = "text/css", href = "custom_styles.css"),
+        tags$head(tags$script(src="Leaflet.sleep.js"))
     ),
     bsModal(id="instructions",
             title="How do I use this app?",

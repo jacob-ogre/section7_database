@@ -47,14 +47,16 @@ server_alt_map_page <- function(input, output, selected_3, session) {
 
         map <- leaflet(data = eso_geo_dat) %>%
                    addPolygons(fillColor = ~pal(to_plot),
-                               fillOpacity = 0.5, 
+                               fillOpacity = 0.65, 
                                stroke = TRUE, 
                                weight = 1.5, 
                                color = "#000000", # settings for borders
                                smoothFactor = 1.1,
                                popup = popupFormat) %>% 
-                   addTiles(urlTemplate = map_templ_url(),
-                            attribution = map_attrib()) %>%
+                   addTiles() %>%
+                   # addProviderTiles("Stamen.Toner") %>%
+                   # addTiles(urlTemplate = map_templ_url(),
+                   #          attribution = map_attrib()) %>%
                    addLegend("bottomright",
                              pal = pal,
                              values = to_plot,
