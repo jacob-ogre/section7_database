@@ -1,3 +1,6 @@
+// This code by CliffCloud is licensed under the MIT license. Please see 
+// https://github.com/CliffCloud/Leaflet.Sleep for more information.
+
 L.Map.mergeOptions({
   sleep: true,
   sleepTime: 750,
