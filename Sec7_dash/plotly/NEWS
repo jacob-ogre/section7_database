@@ -1,0 +1,140 @@
+0.5.27 -- 19 Mar 2015
+
+Reimplement geom_ribbon as a basic polygon. Fix #191. Fix #192.
+
+0.5.26 -- 18 Mar 2015
+
+Implemented geom_rect #178
+
+0.5.25 -- 10 March 2015
+
+Implemented geom_smooth() #183
+
+0.5.24 -- 10 March 2015
+
+Implemented facet_wrap(scales="free") #167
+
+0.5.23 -- 10 March 2015.
+
+geom_ribbon() now respects alpha transparency
+
+0.5.22 -- 2 March 2015.
+
+Fixes for ylim() #171.
+
+0.5.21 -- 23 February 2015.
+
+Fixes for error bars and tick marks.
+
+0.5.20 -- 9 February 2015.
+
+Add alpha transparency to fill conversion.
+Let geom_area support colour and fill aesthetics.
+
+0.5.19 -- 23 January 2015.
+
+Support class conversion such as as.Date() within ggplot code.
+
+0.5.18 -- 22 January 2015.
+
+Return proper filepath when filename contains directories.
+
+0.5.17 -- 30 December 2014.
+
+Support date-time binning in histograms.
+
+0.5.16 -- 29 December 2014.
+
+Support colour aesthetic in geom_text().
+
+0.5.15 -- 19 December 2014.
+
+Use proper RCurlOptions in get_figure() method.
+
+0.5.14 -- 1 December 2014.
+
+Make layers geom_line + geom_point only one trace in Plotly.
+
+0.5.13 -- 27 November 2014.
+
+Rename translation file and server endpoint parameter to be hip.
+
+0.5.12 -- 12 November 2014.
+
+Improve legend title position.
+
+0.5.11 -- 11 November 2014.
+
+Show legend title.
+
+0.5.10 -- 7 November 2014.
+
+Improve showlegend and fix legend’s `x` position.
+
+0.5.9 -- 3 November 2014.
+
+Default colours for geom_polygon().
+
+0.5.8 -- 30 October 2014.
+
+Support hline over a factor x range.
+Default colours for geom_boxplot().
+
+0.5.7 -- 29 October 2014.
+
+Default colours for geom_area() and geom_ribbon().
+
+0.5.6 -- 28 October 2014.
+
+Convert line size faithfully.
+
+0.5.5 -- 24 October 2014.
+
+Support category histograms (with factors).
+
+0.5.4 -- 22 October 2014.
+
+Support conversion of geom_vline().
+
+0.5.3 -- 21 October 2014.
+
+Support conversion of geom_bar() with position_dodge().
+
+0.5.2 -- 18 October 2014.
+
+Support aesthetic shape in geom_path() and, hence, geom_line() (conversion).
+
+0.5.1 -- 15 October 2014.
+
+Do not show zero lines by default (as in ggplot2 plots).
+
+0.5.0 -- 15 October 2014.
+
+From now on, version numbers are meaningful again...
+Many changes meanwhile, especially support for more geoms.
+
+0.4 -- 7 April 2014.
+
+Re-write geom to trace conversion code.
+
+0.3.8 -- 21 March 2014.
+
+ggplotly takes the last_plot() by default.
+
+Support for ggplotly layout elements title, tickcolor, gridcolor,
+showlegend, plot_bgcolor, paper_bgcolor, tickangle, axis titles, plot
+border colors.
+
+0.3.7 -- 14 March 2014.
+
+For ggplotly:
+
+- if on the command line, open a web browser (as before).
+
+- if in knitr/Rmd in a chunk with plotly=TRUE, embed the plot.
+
+0.3.6 -- 10 March 2014.
+
+Merge ggplotly code.
+
+0.3.5

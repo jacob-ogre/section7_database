@@ -35,16 +35,6 @@ body <- dashboardBody(
             includeMarkdown("txt/getting_started.md"),
             size="large"
     ),
-    bsModal(id="datatable_help",
-            title="Using the data table",
-            trigger="table_help",
-            HTML("<ul><li>Hover over the table and scroll right to see additional columns.</li>
-                      <li>Search each column using the boxes at the top of the columns.</li>
-                      <li>Sort the table by column using the arrows above each column.</li>
-                      <li>Show/hide additional columns using the button at right.</li>
-                 </ul>"),
-            size="small"
-    ),
     results_page
 )
 
