@@ -102,22 +102,37 @@ full_ref <- rbind(lookup, new_names)
 unlisted <- data.frame(combo=as.character(unlist(full$spp_ev_ls)))
 unlisted$combo <- gsub("  ", " ", unlisted$combo, fixed=TRUE) 
 semi_final <- merge(full_ref, unlisted, by="combo")
+
+
+
 group_counts_1 <- table(semi_final$group)
 group_pcts <- group_counts_1 / sum(group_counts_1)
-
 group_counts_1
 
 ref_group_counts <- table(full_ref$group)
-ref_group_pcts <- ref_group_counts / sum(ref_group_counts)
+ref_group_pcts <- round(ref_group_counts / sum(ref_group_counts), 5) * 100
 
+pct_consults <- group_pcts
+pct_listings <- ref_group_pcts
 
-pct_consults <- group_pcts*100
-pct_listings <- ref_group_pcts*100
+pct_consults <- round(group_pcts, 5)*100
+pct_listings <- round(ref_group_pcts, 5)
 
-pct_consults <- round(group_pcts, 3)*100
-pct_listings <- round(ref_group_pcts, 3)*100
+round(pct_consults / pct_listings, 5) * 100
+enrich <- round(pct_consults / pct_listings, 5) * 10000 # x10000 b/c using two percentages
 
-round(pct_consults / pct_listings, 3) * 100
+##########################################################################
+# Make an output df
+outdf <- data.frame(group=names(ref_group_counts),
+                    group_count = as.vector(ref_group_counts),
+                    group_pct = as.vector(ref_group_pcts),  # good
+                    consult_count = as.vector(group_counts_1),
+                    consult_pct = as.vector(pct_consults),
+                    enrichment = as.vector(enrich))
+head(outdf)
 
+write.table(outdf, 
+            file="~/Google Drive/Defenders/manuscripts/Section_7_db/comms/taxonomic_group_res.tab",
+            sep="\t", quote=FALSE, row.names = FALSE)
 
 
