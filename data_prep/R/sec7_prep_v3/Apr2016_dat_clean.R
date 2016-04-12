@@ -97,13 +97,14 @@ names(data)
 ##############################################################################
 # Make new variables for the df
 ##############################################################################
+
+# First the place data collapse
 base3 <- "/Users/jacobmalcom/Repos/Defenders/section7_database/data_prep/R/sec7_prep_v3/"
 st_ESO <- read_tsv(paste0(base3, "state_ESO_mappings.tsv"))
 
 ESOffice <- tapply(data$ESOffice,
                    INDEX = data$activity_code,
                    FUN = unique)
-
 region <- tapply(data$region,
                  INDEX = data$activity_code,
                  FUN = unique)
@@ -118,8 +119,46 @@ place <- merge(state, reg_df, by="activity_code")
 head(place)
 place <- place[, c(1, 4, 3, 2)]
 
+by_activity <- function(x) {
+    res <- tapply(x,
+                  INDEX = data$activity_code,
+                  FUN = unique)
+    if (length(res) != 11220) {
+        print("non-uniques")
+    }
+    return(res)
+}
 
-
+title <- by_activity(data$title)
+lead_agency <- by_activity(data$lead_agency)
+FY <- by_activity(data$FY)
+FY_start <- by_activity(data$FY_start)
+FY_concl <- by_activity(data$FY_concl)
+start_date <- by_activity(data$start_date)
+date_formal_consult <- by_activity(data$date_formal_consult)
+due_date <- by_activity(data$due_date)
+FWS_concl_date <- by_activity(data$FWS_concl_date)
+elapsed <- by_activity(data$elapsed)
+timely_concl <- by_activity(data$timely_concl)
+hours_logged <- by_activity(data$hours_logged)
+events_logged <- by_activity(data$events_logged)
+formal_consult <- by_activity(data$formal_consult)
+consult_type <- by_activity(data$consult_type)
+consult_complex <- by_activity(data$consult_complex)
+work_type <- by_activity(data$work_type) # need to make work_category!
+ARRA <- by_activity(data$ARRA)
+datum <- by_activity(data$datum)
+lat_dec_deg <- by_activity(data$lat_dec_deg)
+long_dec_deg <- by_activity(data$long_dec_deg)
+lat_deg <- by_activity(data$lat_deg)
+lat_min <- by_activity(data$lat_min)
+lat_sec <- by_activity(data$lat_sec)
+long_deg <- by_activity(data$long_deg)
+long_min <- by_activity(data$long_min)
+long_sec <- by_activity(data$long_sec)
+UTM_E <- by_activity(data$UTM_E)
+UTM_N <- by_activity(data$UTM_N)
+UTM_zone <- by_activity(data$UTM_zone)
 
 
 ######################

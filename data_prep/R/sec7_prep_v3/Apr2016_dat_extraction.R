@@ -90,6 +90,7 @@ Form_Apr_15 <- Form_Apr_15[, c(1:37, 43:54)]
 dim(Form_Apr_15)
 
 new_dat <- rbind(new_dat, Form_Apr_15)
+dim(new_dat)
 
 # now for the extras...
 ex1 <- read_excel(paste0(base, "/extras_March2016/HD-12087-July_7_R4_Informal.xlsx"),
@@ -120,10 +121,12 @@ miss_dat <- data.frame(`Species Involved / Evaluated`,
                        `UTM North`,
                        `UTM Zone`)
 
-ex1_upd <- cbind(ex1[, c(1:13)], miss_dat, ex1[, c(14:34)])
+ex1_upd <- cbind(ex1[, c(1:13)], 
+                 miss_dat, 
+                 ex1[, c(14:27)], 
+                 ex1[, c(30:34)], 
+                 ex1[, c(28:29)])
 names(ex1_upd) <- names(new_dat)
-
-setdiff(names(new_dat), names(ex1_upd))
 
 new_dat <- rbind(new_dat, ex1_upd)
 
