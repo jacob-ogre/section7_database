@@ -15,6 +15,8 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 # 
 
+library(digest)
+library(plyr)
 library(dplyr)
 library(readr)
 
@@ -120,9 +122,15 @@ head(place)
 place <- place[, c(1, 4, 3, 2)]
 
 by_activity <- function(x) {
+    clr <- function(x) {
+        ifelse(identical(x, character(0)),
+               NA,
+               as.character(x))
+    }
     res <- tapply(x,
                   INDEX = data$activity_code,
-                  FUN = unique)
+                  FUN = function(x) {(unique(x[!is.na(x)]))} )
+    res <- lapply(res, FUN=clr)
     if (length(res) != 11220) {
         print("non-uniques")
     }
@@ -166,13 +174,336 @@ UTM_zone <- by_activity(data$UTM_zone)
 make_spp_ls <- function(x, y) {
     res <- tapply(x,
                   INDEX = y,
-                  FUN = function(z) { list(unique(z)) })
+                  FUN = function(z) { unlist(list(unique(z))) })
     return(res)
 }
 
 spp_ev_ls <- make_spp_ls(data$spp_ev, data$activity_code)
+spp_ev_df <- data.frame(activity_code = names(spp_ev_ls),
+                        spp_ev_ls = spp_ev_ls)
+
 spp_BO_ls <- make_spp_ls(data$spp_BO, data$activity_code)
-n_spp_ev <- lapply(FUN=length, X=spp_ev_ls)
+spp_BO_df <- data.frame(activity_code = names(spp_BO_ls),
+                        spp_BO_ls = spp_BO_ls)
+
+data$spp_BO_det <- ifelse(!is.na(data$spp_BO),
+                          paste0(data$spp_BO, 
+                                 ": BO = ", 
+                                 data$BO_determin, 
+                                 "; CH = ",
+                                 data$CH_determin),
+                          " ")
+spp_BOdet <- make_spp_ls(data$spp_BO_det, data$activity_code)
+spp_BOddf <- data.frame(activity_code = names(spp_BOdet),
+                        spp_BOdet = spp_BOdet)
+
+n_spp_ev <- tapply(spp_ev_df$spp_ev_ls,
+                   INDEX=spp_ev_df$activity_code, 
+                   FUN=function(x) length(strsplit(x[[1]], split=",", fixed=T)))
+head(n_spp_ev)
+
+n_spp_ev <- data.frame(activity_code = names(n_spp_ev),
+                       n_spp_ev = as.vector(n_spp_ev))
+
+spp_dat <- merge(spp_ev_df, spp_BOddf, by="activity_code")
+spp_dat <- merge(spp_dat, n_spp_ev, by="activity_code")
+
+#######################
+# determinations
+
+base3 <- "/Users/jacobmalcom/Repos/Defenders/section7_database/data_prep/R/sec7_prep_v3/"
+dmap <- read_tsv(paste0(base3, "Workbook1.txt"))
+dmap[1,1] <- NA
+dmap[1,2] <- NA
+dmap[6,2] <- NA
+names(dmap) <- c("BO_determin", "det_map")
+dmap$CH_determin <- dmap$BO_determin
+
+dmap$BO_determin <- gsub(x=dmap$BO_determin, 
+                         pattern='\"',
+                         replacement='',
+                         fixed=TRUE)
+dmap$CH_determin <- gsub(x=dmap$CH_determin, 
+                         pattern='\"',
+                         replacement='',
+                         fixed=TRUE)
+
+combo1 <- paste(data$activity_code, data$spp_BO)
+tmp <- cbind(data, combo1)
+tmp$uniq <- duplicated(tmp$combo1)
+t2 <- tmp[tmp$uniq == FALSE, ]
+unique(t2$BO_determin)
+
+t3 <- merge(t2, dmap, by="BO_determin")
+table(t3$det_map)
+
+t4 <- merge(t2, dmap, by="CH_determin")
+table(t4$det_map)
+
+jsub <- t3[t3$det_map == "JEOP" & !is.na(t3$det_map), ]
+amsub <- t4[t4$det_map == "AM" & !is.na(t4$det_map), ]
+lsub <- t3[t3$det_map == "LAA" & !is.na(t3$det_map), ]
+nlsub <- t3[t3$det_map == "NLAA" & !is.na(t3$det_map), ]
+nesub <- t3[t3$det_map == "NE" & !is.na(t3$det_map), ]
+tsub <- t3[t3$det_map == "TA" & !is.na(t3$det_map), ]
+
+n_jeop <- tapply(jsub$det_map,
+                 INDEX=jsub$activity_code,
+                 FUN=length)
+nojeop <- setdiff(unique(data$activity_code), names(n_jeop))
+nojena <- rep(0, length(nojeop))
+nojedf <- data.frame(activity_code=nojeop, n_jeop=nojena)
+n_jeop <- data.frame(activity_code=names(n_jeop), n_jeop=as.vector(n_jeop))
+n_jeop <- rbind(n_jeop, nojedf)
+dim(n_jeop)
+
+n_admo <- tapply(amsub$det_map,
+                 INDEX=amsub$activity_code,
+                 FUN=length)
+noadmo <- setdiff(unique(data$activity_code), names(n_admo))
+noamna <- rep(0, length(noadmo))
+noamdf <- data.frame(activity_code=noadmo, n_admo=noamna)
+n_admo <- data.frame(activity_code=names(n_admo), n_admo=as.vector(n_admo))
+n_admo <- rbind(n_admo, noamdf)
+dim(n_admo)
+
+n_laa <- tapply(lsub$det_map,
+                INDEX=lsub$activity_code,
+                FUN=length)
+nolaa <- setdiff(unique(data$activity_code), names(n_laa))
+nolana <- rep(0, length(nolaa))
+noladf <- data.frame(activity_code=nolaa, n_laa=nolana)
+n_laa <- data.frame(activity_code=names(n_laa), n_laa=as.vector(n_laa))
+n_laa <- rbind(n_laa, noladf)
+dim(n_laa)
+
+n_nlaa <- tapply(nlsub$det_map,
+                 INDEX=nlsub$activity_code,
+                 FUN=length)
+nonlaa <- setdiff(unique(data$activity_code), names(n_nlaa))
+nonlna <- rep(0, length(nonlaa))
+nonldf <- data.frame(activity_code=nonlaa, n_nlaa=nonlna)
+n_nlaa <- data.frame(activity_code=names(n_nlaa), n_nlaa=as.vector(n_nlaa))
+n_nlaa <- rbind(n_nlaa, nonldf)
+dim(n_nlaa)
+
+n_ne <- tapply(nesub$det_map,
+               INDEX=nesub$activity_code,
+               FUN=length)
+none <- setdiff(unique(data$activity_code), names(n_ne))
+nonena <- rep(0, length(none))
+nonedf <- data.frame(activity_code=none, n_ne=nonena)
+n_ne <- data.frame(activity_code=names(n_ne), n_ne=as.vector(n_ne))
+n_ne <- rbind(n_ne, nonedf)
+dim(n_ne)
+
+n_ta <- tapply(tsub$det_map,
+               INDEX=tsub$activity_code,
+               FUN=length)
+nota <- setdiff(unique(data$activity_code), names(n_ta))
+notana <- rep(0, length(nota))
+notadf <- data.frame(activity_code=nota, n_ta=notana)
+n_ta <- data.frame(activity_code=names(n_ta), n_ta=as.vector(n_ta))
+n_ta <- rbind(n_ta, notadf)
+dim(n_ta)
+
+determ_counts <- n_jeop
+determ_counts$activity_code <- as.character(determ_counts$activity_code)
+counts <- list(n_admo, n_laa, n_nlaa, n_ne, n_ta)
+for (i in counts) {
+    i$activity_code <- as.character(i$activity_code)
+    determ_counts <- merge(determ_counts, i, by = "activity_code")
+}
+dim(determ_counts)
+
+############################################################################
+# Need to hash the biologists' names
+############################################################################
+
+data$staff_lead_hash <- rep("", length(data$staff_lead))
+for (i in 1:length(data$staff_lead_hash)) {                       
+    if (as.character(data$staff_lead[i]) != "" &
+        !is.na(data$staff_lead[i])) {
+        data$staff_lead_hash[i] <- digest(data$staff_lead[i], "md5")
+    } else {
+        data$staff_lead_hash[i] <- "None"
+    }
+}
+
+staff_hash_tab <- tapply(data$staff_lead_hash,
+                         data$activity_code,
+                         FUN = unique)
+staff_hash_df <- data.frame(activity_code = names(staff_hash_tab),
+                            staff_support_hash = as.vector(staff_hash_tab))
+
+data$staff_support_hash <- rep("", length(data$staff_support))
+for (i in 1:length(data$staff_support_hash)) {                       
+    if (as.character(data$staff_support[i]) != "" &
+        !is.na(data$staff_support[i])) {
+        data$staff_support_hash[i] <- digest(data$staff_support[i], "md5")
+    } else {
+        data$staff_support_hash[i] <- "None"
+    }
+}
+
+stsup_hash_tab <- tapply(data$staff_support_hash,
+                         data$activity_code,
+                         FUN = function(x) {paste(unique(x), collapse="; ")})
+stsup_hash_df <- data.frame(activity_code = names(stsup_hash_tab),
+                            staff_support_hash = as.vector(stsup_hash_tab))
+
+############################################################################
+# Now to put the pieces together
+############################################################################
+dim(place)
+
+fields <- list(title, lead_agency, FY, FY_start, FY_concl, start_date, 
+               date_formal_consult, due_date, FWS_concl_date, elapsed, 
+               timely_concl, hours_logged, events_logged, formal_consult, 
+               consult_type, consult_complex, work_type, ARRA, 
+               datum, lat_dec_deg, long_dec_deg, lat_deg, lat_min, lat_sec, 
+               long_deg, long_min, long_sec, UTM_E, UTM_N, UTM_zone)
+
+fnames <- list("title", "lead_agency", "FY", "FY_start", "FY_concl", "start_date", 
+               "date_formal_consult", "due_date", "FWS_concl_date", "elapsed", 
+               "timely_concl", "hours_logged", "events_logged", "formal_consult", 
+               "consult_type", "consult_complex", "work_type", "ARRA", 
+               "datum", "lat_dec_deg", "long_dec_deg", "lat_deg", "lat_min", "lat_sec", 
+               "long_deg", "long_min", "long_sec", "UTM_E", "UTM_N", "UTM_zone")
+
+plc_tmp <- place
+for (i in 1:length(fields)) {
+    idf <- data.frame(x=names(get(fnames[[i]][1])),
+                      y=as.vector(unlist(get(fnames[[i]][1]))))
+    names(idf) <- c("activity_code", fnames[[i]][1])
+    plc_tmp <- merge(plc_tmp, idf, by = "activity_code")
+    print(fnames[[i]][1])
+    print(dim(plc_tmp))
+}
+
+lede <- plc_tmp
+lede <- merge(lede, spp_dat, by = "activity_code")
+lede <- merge(lede, determ_counts)
+names(lede)
+names(lede)[36] <- "spp_BO_ls"
+
+lede <- merge(lede, staff_hash_df, by = "activity_code")
+lede <- merge(lede, stsup_hash_df, by = "activity_code")
+
+tmp_lede <- lede
+tmp_lede$spp_ev_ls <- unlist(lapply(tmp_lede$spp_ev_ls, FUN=paste, collapse="; "))
+tmp_lede$spp_BO_ls <- unlist(lapply(tmp_lede$spp_BO_ls, FUN=paste, collapse="| "))
+names(tmp_lede)
+
+
+write.table(tmp_lede,
+            file="data_prep/R/sec7_prep_v3/lede1.tsv",
+            sep = "\t",
+            quote = FALSE,
+            row.names = FALSE)
+
+############################################################################
+# Fix up the var names, order, create missing vars; set data types
+############################################################################
+newd <- lede
+names(newd)[43] <- "n_tech"
+n_rpa <- newd$n_jeop
+newd$date_active_concl <- newd$FWS_concl_date
+newd <- cbind(newd[, c(1:14)], newd[, 46], newd[, 15:45])
+names(newd)[15] <- "date_active_concl"
+names(newd)[45] <- "staff_lead_hash"
+names(newd)[46] <- "staff_support_hash"
+
+work_type <- as.character(newd$work_type)
+work_cat <- lapply(work_type, 
+                   FUN = function(x) {tolower(strsplit(x, split = " - ")[[1]][1])})
+head(unlist(work_cat), 20)
+
+newd <- cbind(newd[, 1:22], 
+              data.frame(work_category=unlist(work_cat)), 
+              newd[, 23:46])
+
+names(newd)[39] <- "n_spp_eval"
+
+n_spp_BO_ls <- lapply(spp_BOdet, 
+                      FUN = function(x) {
+                          ifelse(x == " ",
+                                 0,
+                                 length(x))
+                      })
+nspls <- unlist(lapply(n_spp_BO_ls, FUN = unique))
+nspdf <- data.frame(activity_code = names(nspls),
+                    n_spp_BO = as.vector(nspls))
+newd <- merge(newd, nspdf, by="activity_code")
+names(newd)
+
+n_conc <- rep(NA, length(newd$activity_code))
+newd <- cbind(newd[, 1:39], newd[, 48], newd[, 44], newd[, 43], n_conc, 
+              newd[, 40], n_rpa, newd[, 41], newd[, 45:47])
+names(newd)
+
+names(newd)[40:42] <- c("n_spp_BO", "n_nofx", "n_NLAA")
+names(newd)[44] <- "n_jeop"
+names(newd)[46] <- "n_admo"
+names(newd)
+new2 <- newd
+
+new2$spp_ev_ls <- unlist(lapply(new2$spp_ev_ls, FUN=paste, collapse="; "))
+new2$spp_BO_ls <- unlist(lapply(new2$spp_BO_ls, FUN=paste, collapse="| "))
+
+write.table(new2,
+            file="data_prep/R/sec7_prep_v3/prep_v1.tsv",
+            sep = "\t",
+            quote = FALSE,
+            row.names = FALSE)
+
+for (i in 1:length(newd)) {
+    print(names(newd)[i])
+    print(class(newd[[i]]))
+    print("==============")
+}
+
+to_num <- c(2, 7:9, 14, 26:35)
+for (i in to_num) {
+    newd[[i]] <- as.numeric(newd[[i]])
+}
+
+new3 <- newd
+to_date <- c(10:13, 15)
+for (i in to_date) {
+    tmp <- as.numeric(as.character(new3[[i]]))
+    t2 <- as.Date(tmp, origin="1899-12-30")
+    new3[[i]] <- as.character(t2)
+}
+
+pre_names <- new3
+pre_names$spp_ev_ls <- unlist(lapply(pre_names$spp_ev_ls, FUN=paste, collapse="; "))
+pre_names$spp_BO_ls <- unlist(lapply(pre_names$spp_BO_ls, FUN=paste, collapse="| "))
+
+write.table(pre_names,
+            file="data_prep/R/sec7_prep_v3/pre_names.tsv",
+            sep = "\t",
+            quote = FALSE,
+            row.names = FALSE)
+
+##############################################################################
+# Now for the horrifying task of homogenizing species names!
+base5 <- "/Users/jacobmalcom/Repos/Defenders/section7_database/defenders_sec7_shiny"
+infile <- paste0(base5, "/data/FWS_S7_clean_30Jul2015.RData")
+load(infile)
+
+ref_sp <- unlist(unlist(full$spp_ev_ls))
+ref_uq <- unique(ref_sp)
+length(ref_uq)
+
+sp_ev <- unlist(unlist(new3$spp_ev_ls))
+sp_ev_uq <- unique(sp_ev)
+length(sp_ev_uq)
+
+miss_sp_new <- setdiff(sp_ev_uq, ref_uq)
+length(miss_sp_new)
+
+# NOPE!  Going to have to use Python...
 
 
 
