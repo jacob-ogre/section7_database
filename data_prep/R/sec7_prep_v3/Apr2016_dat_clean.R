@@ -320,31 +320,22 @@ dim(determ_counts)
 # Need to hash the biologists' names
 ############################################################################
 
-data$staff_lead_hash <- rep("", length(data$staff_lead))
-for (i in 1:length(data$staff_lead_hash)) {                       
-    if (as.character(data$staff_lead[i]) != "" &
-        !is.na(data$staff_lead[i])) {
-        data$staff_lead_hash[i] <- digest(data$staff_lead[i], "md5")
+hash_names <- function(x) {
+    if(as.character(x) != "" & !is.na(x)) {
+        return(digest(x, "md5"))
     } else {
-        data$staff_lead_hash[i] <- "None"
+        return("None")
     }
 }
+
+data$staff_lead_hash <- unlist(lapply(data$staff_lead, FUN = hash_names))
+data$staff_support_hash <- unlist(lapply(data$staff_support, FUN = hash_names))
 
 staff_hash_tab <- tapply(data$staff_lead_hash,
                          data$activity_code,
                          FUN = unique)
 staff_hash_df <- data.frame(activity_code = names(staff_hash_tab),
-                            staff_support_hash = as.vector(staff_hash_tab))
-
-data$staff_support_hash <- rep("", length(data$staff_support))
-for (i in 1:length(data$staff_support_hash)) {                       
-    if (as.character(data$staff_support[i]) != "" &
-        !is.na(data$staff_support[i])) {
-        data$staff_support_hash[i] <- digest(data$staff_support[i], "md5")
-    } else {
-        data$staff_support_hash[i] <- "None"
-    }
-}
+                            staff_lead_hash = as.vector(staff_hash_tab))
 
 stsup_hash_tab <- tapply(data$staff_support_hash,
                          data$activity_code,
@@ -394,7 +385,6 @@ tmp_lede <- lede
 tmp_lede$spp_ev_ls <- unlist(lapply(tmp_lede$spp_ev_ls, FUN=paste, collapse="; "))
 tmp_lede$spp_BO_ls <- unlist(lapply(tmp_lede$spp_BO_ls, FUN=paste, collapse="| "))
 names(tmp_lede)
-
 
 write.table(tmp_lede,
             file="data_prep/R/sec7_prep_v3/lede1.tsv",
@@ -458,14 +448,19 @@ write.table(new2,
             row.names = FALSE)
 
 for (i in 1:length(newd)) {
-    print(names(newd)[i])
-    print(class(newd[[i]]))
-    print("==============")
+    cat(paste0(i, " ", names(newd)[i], "\n"))
+    cat(paste0("\t", class(newd[[i]]), "\n"))
+    cat("==============\n")
+}
+
+to_char <- c(1, 4:6, 16:25, 36, 48, 49)
+for(i in to_char) {
+    newd[[i]] <- as.character(newd[[i]])
 }
 
 to_num <- c(2, 7:9, 14, 26:35)
 for (i in to_num) {
-    newd[[i]] <- as.numeric(newd[[i]])
+    newd[[i]] <- as.numeric(as.character(newd[[i]]))
 }
 
 new3 <- newd
