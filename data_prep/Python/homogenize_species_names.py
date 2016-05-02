@@ -16,15 +16,19 @@ import sys
 from pprint import pprint as pp
 from species_names import StandardNames as SN
 from species_names import LookupNames as look
-from section7 import Record
+from section7_v2 import Record
 
 oddballs = {'eastern puma (=cougar) (puma (=felis) concolor couguar)':
                 'Puma (=cougar), eastern|(Puma (=Felis) concolor cougar)', 
             'hayun iagu (=(guam), tronkon guafi (rota)) (serianthes nelsonii)':
                 'Iagu, hayun (=(guam), tronkon guafi (rota))|(Serianthes nelsonii)',
+            'Hayun Iagu (=(Guam), Tronkon guafi (Rota)) (Serianthes nelsonii)':
+                'Iagu, hayun (=(guam), tronkon guafi (rota))|(Serianthes nelsonii)',
             'ione (incl. irish hill) buckwheat (eriogonum apricum (incl. var. prostratum)':
                 'Buckwheat, Ione (incl. Irish Hill)|(Eriogonum apricum (incl. var. prostratum))',
             'puma (=mountain lion) (puma (=felis) concolor (all subsp. except coryi)':
+                'Puma (=mountain lion)|(Puma (=Felis) concolor (all subsp. except coryi))', 
+            'puma (=mountain lion) (puma (=felis) concolor (all subsp. except coryi))':
                 'Puma (=mountain lion)|(Puma (=Felis) concolor (all subsp. except coryi))', 
             'robust (incl. scotts valley) spineflower (chorizanthe robusta (incl. vars. robusta and hartwegii)':
                 'Spineflower, robust (incl. Scotts Valley)|Chorizanthe robusta (incl. vars. robusta and hartwegii))',
@@ -32,6 +36,8 @@ oddballs = {'eastern puma (=cougar) (puma (=felis) concolor couguar)':
                 'Spineflower, robust (incl. Scotts Valley)|Chorizanthe robusta (incl. vars. robusta and hartwegii))',
             'san clemente island lotus (=broom) (acmispon dendroideus var. traskiae (=lotus d. ssp. traskiae)':
                 'Lotus, San Clemente Island|Acmispon dendroideus var. traskiae (=Lotus d. ssp. traskiae))',
+            'Atlantic sturgeon (Gulf subspecies) (Acipenser oxyrinchus (=oxyrhynchus) desotoi)': 
+                'Sturgeon, Atlantic (Gulf subspecies)|Acipenser oxyrinchus (=oxyrhynchus) desotoi',
             'atlantic sturgeon (gulf subspecies) (acipenser oxyrinchus (=oxyrhynchus) desotoi)': 
                 'Sturgeon, Atlantic (Gulf subspecies)|Acipenser oxyrinchus (=oxyrhynchus) desotoi'
             }
@@ -52,7 +58,9 @@ def main():
     with open(outfil, 'w') as out:
         for line in open(infile):
             if not line.startswith("activity_code"):
+                line = line.lower()
                 rec = Record(line)
+                # print(rec.ev_list)
                 too_many_parenth = too_many_parenth.union(rec.too_many_parentheses)
                 new_names = []
                 for i in rec.name_dict:
@@ -62,13 +70,15 @@ def main():
                         cur_sci = i[0].upper() + i[1:]
                         cur_name = lookup.find_by_scientific(cur_sci)
                         if len(rec.too_many_parentheses) > 0:
+                            # print(rec.too_many_parentheses)
+                            # sys.exit()
                             new_name = oddballs[list(rec.too_many_parentheses)[0]]
                         if cur_name != "No match":
                             new_name = cur_name.common + "|(" + cur_name.sci + ")"
                         else:
                             new_name = make_new_name(i, rec.name_dict[i])
                     new_names.append(new_name)
-                rec.data[37] = "...".join(new_names)
+                rec.data[36] = "...".join(new_names)
                 out.write(rec.make_new_line())
             else:
                 out.write(line)
