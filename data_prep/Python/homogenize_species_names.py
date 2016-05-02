@@ -58,7 +58,7 @@ def main():
     with open(outfil, 'w') as out:
         for line in open(infile):
             if not line.startswith("activity_code"):
-                line = line.lower()
+                line = line
                 rec = Record(line)
                 # print(rec.ev_list)
                 too_many_parenth = too_many_parenth.union(rec.too_many_parentheses)

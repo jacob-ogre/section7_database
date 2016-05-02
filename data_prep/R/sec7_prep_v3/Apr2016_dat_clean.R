@@ -481,24 +481,24 @@ write.table(pre_names,
             quote = FALSE,
             row.names = FALSE)
 
-##############################################################################
-# Now for the horrifying task of homogenizing species names!
-base5 <- "/Users/jacobmalcom/Repos/Defenders/section7_database/defenders_sec7_shiny"
-infile <- paste0(base5, "/data/FWS_S7_clean_30Jul2015.RData")
-load(infile)
-
-ref_sp <- unlist(unlist(full$spp_ev_ls))
-ref_uq <- unique(ref_sp)
-length(ref_uq)
-
-sp_ev <- unlist(unlist(new3$spp_ev_ls))
-sp_ev_uq <- unique(sp_ev)
-length(sp_ev_uq)
-
-miss_sp_new <- setdiff(sp_ev_uq, ref_uq)
-length(miss_sp_new)
-
-# NOPE!  Going to have to use Python...
+# ##############################################################################
+# # Now for the horrifying task of homogenizing species names!
+# base5 <- "/Users/jacobmalcom/Repos/Defenders/section7_database/defenders_sec7_shiny"
+# infile <- paste0(base5, "/data/FWS_S7_clean_30Jul2015.RData")
+# load(infile)
+# 
+# ref_sp <- unlist(unlist(full$spp_ev_ls))
+# ref_uq <- unique(ref_sp)
+# length(ref_uq)
+# 
+# sp_ev <- unlist(unlist(new3$spp_ev_ls))
+# sp_ev_uq <- unique(sp_ev)
+# length(sp_ev_uq)
+# 
+# miss_sp_new <- setdiff(sp_ev_uq, ref_uq)
+# length(miss_sp_new)
+# 
+# # NOPE!  Going to have to use Python...
 
 
 
