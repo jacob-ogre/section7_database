@@ -24,6 +24,8 @@ new <- read.csv("Apr2016_data_cleaned.tsv",
                 header = TRUE,
                 stringsAsFactors = FALSE)
 
+############################################################################
+# now let's start looking at them
 names(full)
 names(new)
 names(full) == names(new)
@@ -37,5 +39,29 @@ get_classes <- function(x, y) {
     }
 }
 get_classes(full, new)
+
+tmp_ev_str <- gsub(pattern = "|", 
+                   replacement = " ",  
+                   x = new$spp_ev_ls, 
+                   fixed = TRUE)
+tmp_ev_ls <- strsplit(x = tmp_ev_str, split = "...", fixed = TRUE)
+length(tmp_ev_ls)
+new$spp_ev_ls <- tmp_ev_ls
+
+dim(full)
+dim(new)
+
+dups <- intersect(full$activity_code, new$activity_code)
+length(dups)
+
+upd_new <- new[!new$activity_code %in% dups, ]
+dim(upd_new)
+
+fin <- rbind(full, upd_new)
+dim(fin)
+
+# for consistency with the app, now rename fin -> full
+full <- fin
+save(full, file = "FWS_S7_clean_02May2016.RData")
 
 
