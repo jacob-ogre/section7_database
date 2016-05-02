@@ -94,6 +94,7 @@ def make_new_name(sci, com):
 
 
 if __name__ == '__main__':
+    print sys.argv
     if len(sys.argv) != 4:
         print main.__doc__
         sys.exit()
