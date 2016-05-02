@@ -25,10 +25,6 @@ class Record(object):
                             "no species defined", "interjurisdictional fish"]
         self.line = line.replace('")', '').replace('"', '')
         self.data = self.line.rstrip().split("\t")
-        # self.spp_ev = self.data[37]
-        # self.spp_BO = self.data[38]
-        # self.spp_ev = self.data[35]
-        # self.spp_BO = self.data[36]
         self.spp_ev = self.data[36].lower()
         self.spp_BO = self.data[37].lower()
         if ";" in self.spp_ev:
