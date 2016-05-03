@@ -112,7 +112,6 @@ shinyServer(function(input, output, session) {
         list(src = "www/01_DOW_LOGO_COLOR_300-01.png",
              contentType = "image/png",
              alt = "Overview of section 7 consultation",
-             a(href = "http://www.defenders.org"),
              width=width)
     }, deleteFile=FALSE)
 
@@ -124,7 +123,6 @@ shinyServer(function(input, output, session) {
         list(src = "www/01_DOW_LOGO_COLOR_300-01.png",
              contentType = "image/png",
              alt = "Overview of section 7 consultation",
-             a(href = "http://www.defenders.org"),
              width=width)
     }, deleteFile=FALSE)
 
@@ -136,7 +134,6 @@ shinyServer(function(input, output, session) {
         list(src = "www/01_DOW_LOGO_COLOR_300-01.png",
              contentType = "image/png",
              alt = "Overview of section 7 consultation",
-             a(href = "http://www.defenders.org"),
              width=width)
     }, deleteFile=FALSE)
 

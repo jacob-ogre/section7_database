@@ -65,3 +65,134 @@ full <- fin
 save(full, file = "FWS_S7_clean_02May2016.RData")
 
 
+############################################################################
+# re-load the new data to deal with bad data points
+load("FWS_S7_clean_02May2016.RData")
+save(full, file = "FWS_S7_clean_02May2016_bak.RData")
+
+neg <- full[full$elapsed < 0 & !is.na(full$elapsed), ]
+
+pre <- full[full$FY < 2008 & !is.na(full$FY), ]
+head(pre[, 1:15])
+
+######## A couple of date issues...
+# First, there are eight formal consultations where the start of formal
+# consultation is after FWS_concl, but I think FWS_concl is for informal
+# stage. These highlight the need to link formal and informal, but to have
+# separate records for each type.
+full$elapsed <- ifelse(full$elapsed < 0, NA, full$elapsed)
+
+# Next, the new data includes 61 consultations with FY < 2008. It looks like 
+# people are entering FY and FY_start rather haphazardly, with some entries
+# logging the current consult FY in FY_start, but that also has the original
+# consult FY in some cases (>500).
+
+# I don't see in my previous cleaning code where I would have set such entries 
+# to NA, # so (unfortunately) I probably did that from the console. Have decided 
+# to set # those entries to NA, at least for now.
+full$FY <- ifelse(full$FY < 2008, NA, full$FY)
+
+
+####### Agency corrections
+# presumably the table is still valid...
+changes <- read.table("lead_agency_rev_data.tsv",
+                      sep="\t",
+                      header=T,
+                      stringsAsFactors=F)
+names(changes) <- c("idx", "agency", "paren", "fix", "comment")
+head(changes)
+
+add_paren <- function(x) {
+    if(is.na(x) | x == "") { return(x) }
+    cur_agency <- changes[changes$agency == x & changes$agency != "" & !is.na(changes$idx), ]
+    if(as.logical(length(.subset2(cur_agency, 1L)))) {
+        if(nrow(cur_agency) == 1 & cur_agency$paren != "" & !is.na(cur_agency[1,1])) {
+            return(paste0(cur_agency$agency, " (", cur_agency$paren, ")"))
+        } else {
+            return(x)
+        }
+    } else {
+        return(x)
+    }
+}
+test_fix <- unlist(lapply(full$lead_agency, FUN = add_paren))
+
+full$lead_agency <- test_fix
+
+full$lead_agency <- ifelse(full$lead_agency=="Forest Service" &
+                           full$ESOffice=="NEW JERSEY ECOLOGICAL SERVICES FIELD OFFICE",
+                           "NJ Forest Service",
+                           as.character(full$lead_agency))
+full$lead_agency <- as.factor(full$lead_agency)
+
+full$lead_agency <- ifelse(full$lead_agency == "Abandoned Mine Lands",
+                           "WYOMING DEPARTMENT OF ENVIRONMENTAL QUALITY",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Council on Environmental Quality" &
+                           full$ESOffice == "LOUISIANA ECOLOGICAL SERVICES FIELD OFFICE",
+                           "Dept. Environmental Quality (LA)",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Council on Environmental Quality" &
+                           full$ESOffice == "CORPUS CHRISTI ECOLOGICAL SERVICES FIELD OFFICE",
+                           "Commission on Environmental Quality (TX)",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Council on Environmental Quality" &
+                           full$ESOffice == "OKLAHOMA ECOLOGICAL SERVICES FIELD OFFICE",
+                           "Dept. Environmental Quality (OK)",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Defense",
+                           "Hawaii Army National Guard",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Environmental Management" &
+                           full$ESOffice == "AUSTIN ECOLOGICAL SERVICES FIELD OFFICE",
+                           "Department of Energy",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Environmental Management" &
+                           full$ESOffice == "VENTURA FISH AND WILDLIFE OFFICE",
+                           "Environmental Protection Agency",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Michigan Department of Natural Resources and Environment",
+                           "Michigan Department of Natural Resources",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "NCDENR - Division of Water Quality",
+                           "North Carolina Department of Environment and Natural Resources`",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "NCDENR - Land Quality Section",
+                           "North Carolina Department of Environment and Natural Resources`",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Tennessee Valley Authority (Federal Government)",
+                           "Tennessee Valley Authority",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(full$lead_agency == "Veterans Affairs Department",
+                           "Department of Veterans Affairs",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- ifelse(as.character(full$lead_agency) == "Game &amp; Fish Department",
+                           "Game and Fish Department (ND)",
+                           as.character(full$lead_agency))
+
+full$lead_agency <- as.factor(full$lead_agency)
+
+
+save(full, file = "FWS_S7_clean_03May2016_0-1.RData")
+
+
+
+
+
+
+
+
+
+

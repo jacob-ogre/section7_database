@@ -149,7 +149,7 @@ server_single_view_page <- function(input, output, selected, session) {
         list(src = "www/line-01.png",
              contentType = "image/png",
              alt = "",
-             a(href = ""),
+             # a(href = ""),
              width=width)
     }, deleteFile=FALSE)
 
