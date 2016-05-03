@@ -15,6 +15,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 # 
 
+library(ggplot2)
+library(ggthemes)
+library(scales)
+
 ############################################################################
 # load the data sets
 load("FWS_S7_clean_30Jul2015.RData")
@@ -92,6 +96,7 @@ full$elapsed <- ifelse(full$elapsed < 0, NA, full$elapsed)
 # to set # those entries to NA, at least for now.
 full$FY <- ifelse(full$FY < 2008, NA, full$FY)
 
+# It might be useful to have dates as class Date...but I will hold off for now
 
 ####### Agency corrections
 # presumably the table is still valid...
@@ -187,9 +192,37 @@ full$lead_agency <- as.factor(full$lead_agency)
 
 save(full, file = "FWS_S7_clean_03May2016_0-1.RData")
 
+###########################################################################
+# Tests
+names(full)
+table(full$region)
+table(full$state)
+table(full$ESOffice)
+table(full$FY)
 
+# want to plot the dates...but NOTE that X is left-trimmed
+tmp <- full
+tmp$st_date <- as.Date(tmp$start_date)
+tmp$st_num <- as.numeric(tmp$st_date)
 
+p <- ggplot(tmp, aes(st_date, ..count..)) +
+     geom_histogram(binwidth = 90, colour="white") +
+     scale_x_date(date_breaks = "1 year",
+                  date_labels = "%Y",
+                  limits = c(as.Date("2007-01-01"),
+                             as.Date("2016-06-30"))) +
+     labs(x = "Year",
+          y = "# consultations\n") +
+     theme_pander() +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p
 
+length(full$elapsed[full$elapsed < 0 & !is.na(full$elapsed)])
+head(sort(table(full$work_category), decreasing=TRUE), 20)
+table(full$datum)
+
+save(full, file = "FWS_S7_clean_03May2016_0-2.RData")
+# now jumping out to 'convert_coords.R' to make everything NAD83 dec. deg.
 
 
 
