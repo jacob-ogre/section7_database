@@ -23,16 +23,11 @@ source("server_pages/server_alt_map_page.R")
 #############################################################################
 shinyServer(function(input, output, session) {
 
-    # js alerts for initialization
-    createAlert(session=session, 
-                anchorId="waiting",
-                content="<p style='font-weight:bold; font-size:large'>Please wait while the data and plots are loaded.</p><br><ul><li>You may close this box with the 'x' to the upper-right.</li><li>Open the 'Selection criteria' box with the <span style='font-size:large; font-weight:bold'>+</span> in that box.</li></ul>",
-                style="danger")
 
-    createAlert(session=session, 
-                anchorId="waiting_comp",
-                content="<p style='font-weight:bold; font-size:large'>Please wait while the data and plots are loaded.</p><br><ul><li>You may close this box with the 'x' to the upper-right.</li><li>Open the 'Compare two selections' box with the <span style='font-size:large; font-weight:bold'>+</span> in that box.</li></ul>",
-                style="danger")
+    withProgress(message = "Loading data...",
+                 detail = "Please wait",
+                 value = 0.33, {
+                     incProgress(0.25)
 
     # The basic reactive subsetting functions...separate functions for each
     # of the pages.
@@ -198,5 +193,7 @@ shinyServer(function(input, output, session) {
             sink()
         }
     )
+
+                 })
 
 })

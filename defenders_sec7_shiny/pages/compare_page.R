@@ -346,13 +346,6 @@ compare_page <- {
             )
         ),
         fluidRow(
-            column(3),
-            column(6,
-                bsAlert("waiting_comp")
-            ),
-            column(3)
-        ),
-        fluidRow(
             column(6,
                 h3("Selection #1", style="font-weight:bold; text-align:center; border-bottom:solid; border-width:2px")
             ),

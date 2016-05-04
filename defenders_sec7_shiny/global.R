@@ -84,7 +84,7 @@ species <- c("All", as.character(levels(as.factor(unlist(unlist(full$spp_ev_ls))
 
 # table to look up species-specific jeop/admod info
 # sp_look_f <- "data/jeop_admod_spp_table_12Jun2015.tab"
-sp_look_f <- "data/jeop_admod_spp_table_02May2016.tab"
+sp_look_f <- "data/jeop_admod_spp_table_02May2016.tsv"
 sp_ja_dat <- read.table(sp_look_f, sep="\t", header=T)
 
 # data for ESFO-level map
