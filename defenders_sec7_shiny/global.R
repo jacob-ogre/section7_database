@@ -54,7 +54,8 @@ source("txt/text_styles.R")
 # Load the data and basic data prep
 #############################################################################
 # load("data/FWS_S7_clean_30Jul2015.RData")
-load("data/FWS_S7_clean_02May2016.RData")
+# load("data/FWS_S7_clean_02May2016.RData")
+load("data/FWS_S7_clean_03May2016_0-4.RData")
 
 full$work_category <- as.factor(full$work_category)
 full$lead_agency <- as.factor(full$lead_agency)

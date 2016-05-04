@@ -22,6 +22,10 @@ z <- unlist(unlist(full$spp_ev_ls))
 q <- sort(z)
 w <- unique(q)
 
+###########################################################################
+###########################################################################
+# RERUN THIS ----v   ALL OF IT
+
 full$spp_ev_ls <- lapply(full$spp_ev_ls,
                          FUN = gsub,
                          pattern = "Panther, Florida (Puma (=Felis) concolor coryi)",
@@ -33,7 +37,7 @@ full$spp_ev_ls <- lapply(full$spp_ev_ls,
                          pattern = "Panther, Florida (Puma concolor coryi)",
                          replacement = "Panther, Florida (Puma concolor couguar)",
                          fixed = TRUE)
-                    
+
 full$spp_ev_ls <- lapply(full$spp_ev_ls,
                          FUN = gsub,
                          pattern = "(=rattlesnake), eastern massasauga",
@@ -48,7 +52,6 @@ full$spp_ev_ls <- lapply(full$spp_ev_ls,
                          pattern = "bewicks|bewick\'s",
                          replacement = "Bewick's")
 
-# Start here
 full$spp_ev_ls <- lapply(full$spp_ev_ls,
                          FUN = gsub,
                          pattern = "[Cc]ooks",

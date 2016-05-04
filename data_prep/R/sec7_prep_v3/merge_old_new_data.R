@@ -227,5 +227,4 @@ save(full, file = "FWS_S7_clean_03May2016_0-2.RData")
 #######################################################
 # Closing in on the end...over to yeat_another_namefix.R
 
-load("FWS_S7_clean_03May2016_0-4.RData")
 

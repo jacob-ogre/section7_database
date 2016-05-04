@@ -156,9 +156,9 @@ names(with_coord) == names(no_coord)
 semi <- rbind(with_coord, no_coord)
 names(semi)
 
-fin <- semi[, c(1:22, 37:51)]
+fin <- semi[, c(1:24, 37:51)]
 fin$datum <- rep("NAD83", length(fin$nad83_lon))
-names(fin)[36:37] <- c("long", "lat")
+names(fin)[38:39] <- c("long", "lat")
 names(fin)
 
 full <- fin
